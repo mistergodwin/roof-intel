@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roof Intel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0d0f14; --card: #1a1e28; --border: #252a38;
+    --red: #e63946; --deepred: #ff6b35; --orange: #f4a261;
+    --yellow: #e9c46a; --blue: #4cc9f0; --blue2: #7dd3fc;
+    --green: #57cc99; --text: #e8eaf0; --muted: #6b7280;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:60px; }
+
+  header { background:linear-gradient(135deg,#0d0f14,#151a26); border-bottom:1px solid var(--border); padding:32px 40px 24px; position:relative; overflow:hidden; }
+  header::before { content:''; position:absolute; top:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(230,57,70,0.12),transparent 70%); pointer-events:none; }
+  .hl { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--red); text-transform:uppercase; margin-bottom:8px; }
+  header h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(36px,6vw,60px); letter-spacing:2px; line-height:1; }
+  header h1 span { color:var(--red); }
+  header p { margin-top:8px; font-size:13px; color:var(--muted); }
+
+  .tabs { display:flex; flex-wrap:wrap; gap:3px; padding:20px 40px 0; border-bottom:1px solid var(--border); }
+  .tab { padding:9px 16px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; border-radius:6px 6px 0 0; border:1px solid transparent; border-bottom:none; cursor:pointer; color:var(--muted); background:transparent; transition:all 0.2s; }
+  .tab.active { background:var(--card); border-color:var(--border); color:var(--text); margin-bottom:-1px; border-bottom:1px solid var(--card); }
+  .tab:hover:not(.active) { color:var(--text); }
+
+  .page { display:none; padding:36px 40px; }
+  .page.active { display:block; }
+
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:2px; margin-bottom:4px; }
+  .section-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
+  .divider { height:1px; background:var(--border); margin:28px 0; }
+
+  /* BRACKET BAR */
+  .bbar { display:flex; height:48px; border-radius:10px; overflow:hidden; margin-bottom:10px; border:1px solid var(--border); }
+  .bseg { display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; font-weight:500; gap:2px; }
+  .bseg small { font-size:9px; opacity:0.75; }
+  .bs1{flex:2;background:rgba(76,201,240,0.2);color:var(--blue);}
+  .bs2{flex:2;background:rgba(76,201,240,0.38);color:var(--blue2);}
+  .bs3{flex:4;background:rgba(244,162,97,0.3);color:var(--orange);}
+  .bs4{flex:5;background:rgba(255,107,53,0.3);color:var(--deepred);}
+  .bs5{flex:3;background:rgba(230,57,70,0.5);color:var(--red);border-left:2px solid var(--red);}
+  .blabels { display:flex; font-size:11px; font-family:'DM Mono',monospace; margin-bottom:28px; }
+  .blabels span { padding:3px 2px; }
+
+  /* TIER CARDS */
+  .tiers { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-bottom:32px; }
+  .tier-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; position:relative; overflow:hidden; transition:transform 0.2s,border-color 0.2s; }
+  .tier-card:hover { transform:translateY(-2px); }
+  .tier-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .tier-card.t1p::before{background:var(--red);} .tier-card.t1::before{background:var(--deepred);}
+  .tier-card.t2::before{background:var(--orange);} .tier-card.t3b::before{background:var(--blue2);}
+  .tier-card.t3a::before{background:var(--blue);}
+  .tier-card:hover.t1p{border-color:var(--red);} .tier-card:hover.t1{border-color:var(--deepred);}
+  .tier-card:hover.t2{border-color:var(--orange);} .tier-card:hover.t3b{border-color:var(--blue2);}
+  .tier-card:hover.t3a{border-color:var(--blue);}
+
+  .tier-badge { display:inline-flex; align-items:center; gap:7px; padding:3px 11px; border-radius:20px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; margin-bottom:12px; }
+  .tier-dot { width:7px; height:7px; border-radius:50%; }
+  .t1p .tier-badge{background:rgba(230,57,70,0.15);color:var(--red);} .t1p .tier-dot{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .t1 .tier-badge{background:rgba(255,107,53,0.15);color:var(--deepred);} .t1 .tier-dot{background:var(--deepred);box-shadow:0 0 6px var(--deepred);}
+  .t2 .tier-badge{background:rgba(244,162,97,0.15);color:var(--orange);} .t2 .tier-dot{background:var(--orange);box-shadow:0 0 6px var(--orange);}
+  .t3b .tier-badge{background:rgba(125,211,252,0.15);color:var(--blue2);} .t3b .tier-dot{background:var(--blue2);box-shadow:0 0 6px var(--blue2);}
+  .t3a .tier-badge{background:rgba(76,201,240,0.12);color:var(--blue);} .t3a .tier-dot{background:var(--blue);box-shadow:0 0 6px var(--blue);}
+
+  .tier-name { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; margin-bottom:6px; }
+  .tier-age { display:inline-block; font-family:'DM Mono',monospace; font-size:11px; padding:3px 9px; border-radius:5px; background:var(--bg); border:1px solid var(--border); margin-bottom:10px; }
+  .tier-desc { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:14px; }
+  .criteria-list { list-style:none; }
+  .criteria-list li { font-size:12px; color:var(--text); padding:6px 0; border-bottom:1px solid var(--border); display:flex; gap:8px; line-height:1.4; }
+  .criteria-list li:last-child { border-bottom:none; }
+  .criteria-list li::before { content:'→'; color:var(--muted); flex-shrink:0; }
+  .score-pill { margin-top:14px; padding:10px 14px; background:var(--bg); border-radius:7px; display:flex; justify-content:space-between; align-items:center; }
+  .score-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .score-val { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; }
+  .t1p .score-val{color:var(--red);} .t1 .score-val{color:var(--deepred);}
+  .t2 .score-val{color:var(--orange);} .t3b .score-val{color:var(--blue2);}
+  .t3a .score-val{color:var(--blue);}
+
+  /* ROOF TYPES */
+  .rt-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:28px; }
+  .rt-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:22px; }
+  .rt-card h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; margin-bottom:4px; }
+  .rt-life { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:10px; }
+  .rt-card p { font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; }
+  .urgency-tag { display:inline-block; padding:3px 10px; border-radius:20px; font-family:'DM Mono',monospace; font-size:10px; margin:2px; }
+  .urgency-tag.hi { background:rgba(230,57,70,0.15); color:var(--red); }
+  .urgency-tag.mod { background:rgba(244,162,97,0.15); color:var(--orange); }
+  .urgency-tag.lo { background:rgba(233,196,106,0.15); color:var(--yellow); }
+  .rt-pitch { margin-top:10px; font-size:11px; color:var(--muted); font-style:italic; padding:8px 10px; background:var(--bg); border-radius:6px; border-left:2px solid var(--border); }
+
+  /* FORMULA */
+  .formula-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:32px; }
+  @media(max-width:860px){.formula-grid{grid-template-columns:1fr;}}
+  .formula-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; }
+  .formula-block h3 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--blue); margin-bottom:14px; }
+  .formula-eq { font-family:'DM Mono',monospace; font-size:12px; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:14px; line-height:2; white-space:pre-wrap; margin-bottom:14px; }
+  .formula-eq .var{color:var(--orange);} .formula-eq .op{color:var(--blue);} .formula-eq .comment{color:var(--muted);font-size:11px;}
+  .factor-table { width:100%; border-collapse:collapse; }
+  .factor-table th { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); text-align:left; padding:7px 10px; border-bottom:1px solid var(--border); }
+  .factor-table td { font-size:12px; padding:8px 10px; border-bottom:1px solid #1e222e; vertical-align:middle; }
+  .factor-table tr:last-child td { border-bottom:none; }
+  .pts { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; text-align:right; }
+  .pts.high{color:var(--red);} .pts.med{color:var(--orange);} .pts.low{color:var(--yellow);}
+  .pts.bonus{color:var(--green);} .pts.watch{color:var(--blue);}
+
+  /* CALCULATOR */
+  .calc-wrap { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:32px; }
+  @media(max-width:760px){.calc-wrap{grid-template-columns:1fr;}}
+  .calc-inputs { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; }
+  .calc-inputs h3 { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
+  .input-group { margin-bottom:16px; }
+  .input-group label { display:block; font-size:11px; color:var(--muted); margin-bottom:5px; font-family:'DM Mono',monospace; }
+  .input-group select { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; padding:8px 10px; outline:none; appearance:none; cursor:pointer; }
+  .input-group select:focus { border-color:var(--blue); }
+  .toggle-group { display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+  .toggle-btn { padding:6px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:11px; cursor:pointer; transition:all 0.15s; font-family:'DM Mono',monospace; }
+  .toggle-btn.on { background:rgba(76,201,240,0.15); border-color:var(--blue); color:var(--blue); }
+
+  .calc-result { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .result-tier-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; transition:color 0.3s; }
+  .result-score { font-family:'Bebas Neue',sans-serif; font-size:90px; line-height:1; letter-spacing:2px; margin-bottom:4px; transition:color 0.3s; }
+  .result-tier-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; margin-bottom:10px; transition:color 0.3s; }
+  .result-action { font-size:12px; color:var(--muted); line-height:1.6; max-width:240px; margin-bottom:14px; }
+  .result-roof-tag { margin-bottom:12px; }
+  .result-breakdown { width:100%; background:var(--bg); border-radius:7px; padding:12px 14px; text-align:left; }
+  .breakdown-row { display:flex; justify-content:space-between; font-family:'DM Mono',monospace; font-size:11px; padding:4px 0; border-bottom:1px solid var(--border); }
+  .breakdown-row:last-child { border-bottom:none; }
+  .breakdown-row .k { color:var(--muted); }
+
+  /* WORKFLOW */
+  .workflow { display:flex; flex-direction:column; position:relative; margin-bottom:32px; }
+  .workflow::before { content:''; position:absolute; left:26px; top:36px; bottom:36px; width:2px; background:linear-gradient(to bottom,var(--red),var(--blue)); }
+  .workflow-step { display:flex; gap:20px; align-items:flex-start; padding:16px 0; }
+  .step-num { width:52px; height:52px; border-radius:50%; background:var(--card); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:20px; flex-shrink:0; position:relative; z-index:1; }
+  .step-content { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 20px; flex:1; }
+  .step-content h4 { font-size:14px; font-weight:600; margin-bottom:5px; }
+  .step-content p { font-size:12px; color:var(--muted); line-height:1.6; }
+  .step-content ul { margin-top:8px; padding-left:14px; }
+  .step-content ul li { font-size:11px; color:var(--muted); margin-bottom:3px; line-height:1.5; }
+
+  /* SOURCES */
+  .sources-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:28px; }
+  .source-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; }
+  .source-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; margin-bottom:12px; }
+  .source-card h4 { font-size:13px; font-weight:600; margin-bottom:5px; }
+  .source-card p { font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; }
+  .source-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1px; padding:2px 7px; border-radius:4px; background:var(--border); color:var(--muted); margin:2px; text-transform:uppercase; }
+
+  /* REPORT */
+  .report-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:28px; margin-bottom:18px; }
+  .report-block h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+  .field-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:10px; }
+  .field { background:var(--bg); border-radius:6px; padding:9px 12px; }
+  .field-key { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+  .field-val { font-size:13px; font-weight:500; color:var(--text); }
+  .field-val.mock { color:var(--muted); font-style:italic; font-size:12px; font-weight:400; }
+
+  /* TAGS */
+  .tag { display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-family:'DM Mono',monospace; margin:2px; }
+  .tag.red{background:rgba(230,57,70,0.15);color:var(--red);}
+  .tag.orange{background:rgba(244,162,97,0.15);color:var(--orange);}
+  .tag.yellow{background:rgba(233,196,106,0.15);color:var(--yellow);}
+  .tag.blue{background:rgba(76,201,240,0.15);color:var(--blue);}
+  .tag.green{background:rgba(87,204,153,0.15);color:var(--green);}
+  .tag.gray{background:var(--border);color:var(--muted);}
+
+  /* INFO BOX */
+  .info-box { background:rgba(76,201,240,0.08); border:1px solid rgba(76,201,240,0.25); border-radius:8px; padding:14px 18px; font-size:13px; color:#a0d8ef; margin-bottom:20px; line-height:1.6; }
+
+  /* SOLAR MULTIPLIER GRID */
+  .solar-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+  .solar-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+  .solar-card .sk { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:6px; }
+  .solar-card .sv { font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px; }
+
+  /* MAP */
+  .map-filter-btn { padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-size:12px; cursor:pointer; transition:all 0.15s; font-family:'DM Mono',monospace; }
+  .map-filter-btn.on { background:rgba(76,201,240,0.15); border-color:var(--blue); color:var(--blue); }
+  .map-filter-btn.solar-filter.on { background:rgba(87,204,153,0.15); border-color:var(--green); color:var(--green); }
+  .popup-field { background:var(--bg); border-radius:8px; padding:10px 12px; }
+  .popup-field-key { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+  .popup-field-val { font-size:13px; font-weight:500; }
+  .map-stat { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 16px; display:flex; align-items:center; gap:10px; font-size:13px; }
+  .map-stat-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hl">Florida Roofing Intelligence</div>
+  <h1>ROOF <span>INTEL</span></h1>
+  <p>A permit-based lead scoring system for identifying prime roofing candidates across Florida counties.</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('tiers',event)">Lead Tiers</div>
+  <div class="tab" onclick="showPage('rooftypes',event)">Roof Types</div>
+  <div class="tab" onclick="showPage('formula',event)">Scoring Formula</div>
+  <div class="tab" onclick="showPage('calculator',event)">Score Calculator</div>
+  <div class="tab" onclick="showPage('workflow',event)">Data Workflow</div>
+  <div class="tab" onclick="showPage('sources',event)">Data Sources</div>
+  <div class="tab" onclick="showPage('report',event)">Report Template</div>
+  <div class="tab" onclick="showPage('map',event)">Neighborhood Map</div>
+
+  <div class="tab" onclick="showPage('sheet',event)">Spreadsheet Export</div>
+</div>
+
+<!-- TIERS PAGE -->
+<div class="page active" id="page-tiers">
+  <div class="section-title">LEAD TIER BRACKETS</div>
+  <p class="section-sub">Five tiers from early watchlist to priority hot lead — driven by roof age and solar presence.</p>
+
+  <div class="bbar">
+    <div class="bseg bs1">6–7 yrs<small>Watchlist</small></div>
+    <div class="bseg bs2">8–9 yrs<small>Watch Priority</small></div>
+    <div class="bseg bs3">10–14 yrs<small>Early Hot Lead</small></div>
+    <div class="bseg bs4">15–19 yrs<small>Hot Lead</small></div>
+    <div class="bseg bs5">20+ yrs<small>Priority</small></div>
+  </div>
+  <div class="blabels">
+    <span style="flex:2;color:var(--blue)">Watchlist</span>
+    <span style="flex:2;color:var(--blue2)">Watch Priority</span>
+    <span style="flex:4;color:var(--orange)">Early Hot Lead</span>
+    <span style="flex:5;color:var(--deepred)">Hot Lead</span>
+    <span style="flex:3;color:var(--red)">Priority</span>
+  </div>
+
+  <div class="tiers">
+    <div class="tier-card t1p">
+      <div class="tier-badge"><div class="tier-dot"></div>Priority Hot Lead</div>
+      <div class="tier-name">🔥🔥 Priority — Old Roof + Solar</div>
+      <div class="tier-age">20+ Years Old</div>
+      <div class="tier-desc">The ultimate candidate. A 20+ year roof carrying solar with no reroof permit on file. Insurance non-renewal is almost certain. Contact immediately.</div>
+      <ul class="criteria-list">
+        <li>Roof 20+ years old or no permit on record</li>
+        <li>Solar present — no reroof since install</li>
+        <li>High FL insurance non-renewal risk</li>
+        <li>3-Tab or Flat roof = extreme urgency</li>
+      </ul>
+      <div class="score-pill"><span class="score-label">Lead Score</span><span class="score-val">90–100</span></div>
+    </div>
+    <div class="tier-card t1">
+      <div class="tier-badge"><div class="tier-dot"></div>Hot Lead</div>
+      <div class="tier-name">🔥 Hot Lead — Aging Roof</div>
+      <div class="tier-age">15–19 Years Old</div>
+      <div class="tier-desc">Past the FL insurance threshold. Renewal pressure is mounting. Solar automatically bumps this to Priority tier.</div>
+      <ul class="criteria-list">
+        <li>Roof 15–19 years, no reroof on record</li>
+        <li>Solar present → bumps to Priority tier</li>
+        <li>Citizens / private insurer renewal risk</li>
+        <li>3-Tab and Flat roofs especially urgent</li>
+      </ul>
+      <div class="score-pill"><span class="score-label">Lead Score</span><span class="score-val">75–89</span></div>
+    </div>
+    <div class="tier-card t2">
+      <div class="tier-badge"><div class="tier-dot"></div>Early Hot Lead</div>
+      <div class="tier-name">🟠 Early Hot Lead</div>
+      <div class="tier-age">10–14 Years Old</div>
+      <div class="tier-desc">Approaching the insurance window fast. Solar = outreach now. Flat roofs at 10 years are already urgent. Key new bracket.</div>
+      <ul class="criteria-list">
+        <li>Roof 10–14 years, no reroof on record</li>
+        <li>Solar present → outreach now</li>
+        <li>Flat / Modified Bitumen → treat as Hot Lead</li>
+        <li>"Plan before insurance forces it" messaging</li>
+      </ul>
+      <div class="score-pill"><span class="score-label">Lead Score</span><span class="score-val">50–74</span></div>
+    </div>
+    <div class="tier-card t3b">
+      <div class="tier-badge"><div class="tier-dot"></div>Watchlist Priority</div>
+      <div class="tier-name">🔵 Watchlist Priority</div>
+      <div class="tier-age">8–9 Years Old</div>
+      <div class="tier-desc">Two years from the Early Hot Lead window. Start warming now. Solar moves these to active outreach immediately.</div>
+      <ul class="criteria-list">
+        <li>Roof 8–9 years ago</li>
+        <li>Solar present → Early Hot Lead outreach now</li>
+        <li>Semi-annual nurture if no solar</li>
+        <li>Re-score every 6 months</li>
+      </ul>
+      <div class="score-pill"><span class="score-label">Lead Score</span><span class="score-val">30–49</span></div>
+    </div>
+    <div class="tier-card t3a">
+      <div class="tier-badge"><div class="tier-dot"></div>Watchlist</div>
+      <div class="tier-name">🔵 Watchlist — Early Tracking</div>
+      <div class="tier-age">6–7 Years Old</div>
+      <div class="tier-desc">3–4 years from the action window. Add to database, track solar installs nearby, build the neighborhood picture.</div>
+      <ul class="criteria-list">
+        <li>Roof 6–7 years ago</li>
+        <li>Database only — no active outreach yet</li>
+        <li>Solar present → bump to Watch Priority</li>
+        <li>Annual re-score, escalate at 8 years</li>
+      </ul>
+      <div class="score-pill"><span class="score-label">Lead Score</span><span class="score-val">10–29</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-title" style="font-size:20px">SOLAR MULTIPLIER</div>
+  <p class="section-sub" style="margin-bottom:16px">Solar bumps every bracket up one full tier automatically.</p>
+  <div class="solar-grid">
+    <div class="solar-card"><div class="sk">6–7 yrs + solar</div><div class="sv" style="color:var(--blue)">Watchlist → Watch Priority</div></div>
+    <div class="solar-card"><div class="sk">8–9 yrs + solar</div><div class="sv" style="color:var(--blue2)">Watch Priority → Early Hot Lead</div></div>
+    <div class="solar-card"><div class="sk">10–14 yrs + solar</div><div class="sv" style="color:var(--orange)">Early Hot Lead → Hot Lead</div></div>
+    <div class="solar-card"><div class="sk">15+ yrs + solar</div><div class="sv" style="color:var(--red)">Hot Lead → Priority</div></div>
+  </div>
+</div>
+
+<!-- ROOF TYPES PAGE -->
+<div class="page" id="page-rooftypes">
+  <div class="section-title">ROOF TYPE REFERENCE</div>
+  <p class="section-sub">Roof type is a label/tag on every lead — no score impact. It guides your sales pitch and urgency conversation.</p>
+  <div class="rt-grid">
+    <div class="rt-card">
+      <h3>3-Tab Asphalt</h3>
+      <div class="rt-life">FL Lifespan: 15–20 years</div>
+      <p>The most common and shortest-lived shingle in Florida. Heat, humidity, and UV hit 3-tab hard. A 15-year-old 3-tab in FL is functionally at end of life.</p>
+      <span class="urgency-tag hi">🔴 High Urgency</span>
+      <div class="rt-pitch">"Insurers are dropping 3-tab roofs — let's get ahead of it."</div>
+    </div>
+    <div class="rt-card">
+      <h3>Architectural Shingle</h3>
+      <div class="rt-life">FL Lifespan: 20–25 years</div>
+      <p>Heavier and more durable than 3-tab. Still vulnerable to FL heat and storm damage. A 20-year architectural shingle is a solid lead even if it looks fine from the street.</p>
+      <span class="urgency-tag mod">🟠 Moderate Urgency</span>
+      <div class="rt-pitch">"Your shingles may look fine — but the underlayment tells a different story."</div>
+    </div>
+    <div class="rt-card">
+      <h3>Flat / Modified Bitumen</h3>
+      <div class="rt-life">FL Lifespan: 10–15 years</div>
+      <p>Shortest lifespan of the group. Flat roofs are especially vulnerable to FL heat expansion, ponding water, and UV breakdown. A 10-year flat roof is already in the danger zone.</p>
+      <span class="urgency-tag hi">🔴 High Urgency</span>
+      <div class="rt-pitch">"Flat roofs fail fast in Florida — at 10 years you're on borrowed time."</div>
+    </div>
+    <div class="rt-card">
+      <h3>Tile (Concrete or Clay)</h3>
+      <div class="rt-life">Tile: 25–50 yrs &nbsp;|&nbsp; Underlayment: 20–25 yrs</div>
+      <p>The tile lasts decades — but the underlayment fails at 20–25 years. Many homeowners don't know their tile roof has a hidden expiration date underneath the tiles.</p>
+      <span class="urgency-tag lo">🟡 Low Urgency (tile)</span>
+      <span class="urgency-tag hi" style="margin-top:4px;display:inline-block">🔴 High Urgency (underlayment)</span>
+      <div class="rt-pitch">"Your tile looks great — but your underlayment is the hidden risk."</div>
+    </div>
+  </div>
+  <div class="info-box">
+    ℹ️ <strong>Tile Underlayment Rule:</strong> Any tile roof 20+ years old should be treated as a Hot Lead regardless of how the tile looks. The underlayment is failing whether the homeowner knows it or not — this is one of your strongest sales conversations.
+  </div>
+</div>
+
+<!-- FORMULA PAGE -->
+<div class="page" id="page-formula">
+  <div class="section-title">SCORING FORMULA</div>
+  <p class="section-sub">A 0–100 point system. Roof type is a tag only — score is driven by age, solar, and risk flags.</p>
+  <div class="formula-grid">
+    <div class="formula-block">
+      <h3>Master Formula</h3>
+      <div class="formula-eq"><span class="var">LeadScore</span> <span class="op">=</span>
+  <span class="var">RoofAge</span> <span class="op">+</span>
+  <span class="var">SolarBonus</span> <span class="op">+</span>
+  <span class="var">RiskFlags</span>
+
+<span class="comment">-- Tier thresholds:
+   90-100 = 🔥🔥 Priority Hot Lead  (20+ yrs)
+   75-89  = 🔥  Hot Lead            (15-19 yrs)
+   50-74  = 🟠  Early Hot Lead      (10-14 yrs)
+   30-49  = 🔵  Watchlist Priority  (8-9 yrs)
+   10-29  = 🔵  Watchlist           (6-7 yrs)
+-- Roof type = tag only, no score impact</span></div>
+    </div>
+    <div class="formula-block">
+      <h3>Roof Age Points</h3>
+      <table class="factor-table">
+        <tr><th>Age</th><th style="text-align:right">Points</th></tr>
+        <tr><td>20+ years (or no permit on record)</td><td class="pts high">40 pts</td></tr>
+        <tr><td>15–19 years</td><td class="pts high">32 pts</td></tr>
+        <tr><td>10–14 years</td><td class="pts med">22 pts</td></tr>
+        <tr><td>8–9 years</td><td class="pts low">14 pts</td></tr>
+        <tr><td>6–7 years</td><td class="pts watch">8 pts</td></tr>
+        <tr><td>Under 6 years</td><td class="pts">0 pts</td></tr>
+      </table>
+    </div>
+    <div class="formula-block">
+      <h3>Solar Bonus Points</h3>
+      <table class="factor-table">
+        <tr><th>Condition</th><th style="text-align:right">Points</th></tr>
+        <tr><td>Solar present — no reroof since install</td><td class="pts high">+25 pts</td></tr>
+        <tr><td>Solar installed within last 2 years</td><td class="pts bonus">+10 pts</td></tr>
+        <tr><td>Roof replaced AFTER solar install</td><td class="pts">0 pts</td></tr>
+        <tr><td>No solar on record</td><td class="pts">0 pts</td></tr>
+      </table>
+    </div>
+    <div class="formula-block">
+      <h3>Risk Flag Points</h3>
+      <table class="factor-table">
+        <tr><th>Factor</th><th style="text-align:right">Points</th></tr>
+        <tr><td>Insurance notice or lapse flag</td><td class="pts high">+12 pts</td></tr>
+        <tr><td>No roof permit in 10+ years (confirmed)</td><td class="pts med">+10 pts</td></tr>
+        <tr><td>Citizens Insurance territory</td><td class="pts med">+8 pts</td></tr>
+        <tr><td>High wind zone (HVHZ / Zone D)</td><td class="pts low">+5 pts</td></tr>
+        <tr><td>Storm damage permits nearby</td><td class="pts low">+5 pts</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="info-box">
+    ℹ️ <strong>Watchlist Auto-Escalation:</strong> A 6-year-old roof will cross into Early Hot Lead in 4 years. Properties with solar escalate one full tier immediately. Re-score all Watchlist properties every 6 months and auto-promote when they cross the next age threshold.
+  </div>
+</div>
+
+<!-- CALCULATOR PAGE -->
+<div class="page" id="page-calculator">
+  <div class="section-title">LEAD SCORE CALCULATOR</div>
+  <p class="section-sub">Enter property permit data to instantly score and classify any lead.</p>
+  <div class="calc-wrap">
+    <div class="calc-inputs">
+      <h3>Property Permit Data</h3>
+      <div class="input-group">
+        <label>ROOF AGE</label>
+        <select id="inp-roofage" onchange="calcScore()">
+          <option value="40">20+ years old (or no permit on record)</option>
+          <option value="32">15–19 years old</option>
+          <option value="22">10–14 years old</option>
+          <option value="14">8–9 years old</option>
+          <option value="8">6–7 years old</option>
+          <option value="0">Under 6 years old</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>ROOF TYPE (tag only — no score impact)</label>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="rt-3tab" onclick="setRT('3tab')">3-Tab Asphalt</button>
+          <button class="toggle-btn" id="rt-arch" onclick="setRT('arch')">Architectural</button>
+          <button class="toggle-btn" id="rt-flat" onclick="setRT('flat')">Flat / Mod Bitumen</button>
+          <button class="toggle-btn" id="rt-tile" onclick="setRT('tile')">Tile</button>
+          <button class="toggle-btn on" id="rt-unk" onclick="setRT('unk')">Unknown</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>SOLAR STATUS</label>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="solar-none" onclick="setSolar('none')">No Solar</button>
+          <button class="toggle-btn on" id="solar-old" onclick="setSolar('old')">Solar — No Reroof Since</button>
+          <button class="toggle-btn" id="solar-new" onclick="setSolar('new')">Solar — Last 2 Years</button>
+          <button class="toggle-btn" id="solar-after" onclick="setSolar('after')">Roof Replaced After Solar</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>RISK FLAGS</label>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="flag-notice" onclick="toggleFlag('notice')">Insurance Notice</button>
+          <button class="toggle-btn" id="flag-citizens" onclick="toggleFlag('citizens')">Citizens Territory</button>
+          <button class="toggle-btn" id="flag-hvhz" onclick="toggleFlag('hvhz')">High Wind Zone</button>
+          <button class="toggle-btn" id="flag-storm" onclick="toggleFlag('storm')">Storm Damage Nearby</button>
+          <button class="toggle-btn" id="flag-noroof" onclick="toggleFlag('noroof')">No Permit 10+ Yrs</button>
+        </div>
+      </div>
+    </div>
+    <div class="calc-result">
+      <div class="result-tier-label" id="res-label">PRIORITY HOT LEAD</div>
+      <div class="result-score" id="res-score">90</div>
+      <div class="result-tier-name" id="res-name">🔥🔥 Priority Lead</div>
+      <div class="result-action" id="res-action">Contact within 48 hours. Old roof + solar — insurance non-renewal is imminent.</div>
+      <div class="result-roof-tag" id="res-rooftag"><span class="tag gray">Unknown Roof Type</span></div>
+      <div class="result-breakdown">
+        <div class="breakdown-row"><span class="k">Roof Age</span><span id="bd-roofage">40 pts</span></div>
+        <div class="breakdown-row"><span class="k">Solar Bonus</span><span id="bd-solar">25 pts</span></div>
+        <div class="breakdown-row"><span class="k">Risk Flags</span><span id="bd-flags">0 pts</span></div>
+        <div class="breakdown-row"><span class="k">Roof Type</span><span id="bd-rooftype" style="color:var(--muted)">Tag only — no score impact</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKFLOW PAGE -->
+<div class="page" id="page-workflow">
+  <div class="section-title">DATA WORKFLOW</div>
+  <p class="section-sub">How to pull, cross-reference, and score properties using public Florida permit records.</p>
+  <div class="workflow">
+    <div class="workflow-step"><div class="step-num">01</div><div class="step-content"><h4>Pull County Permit List</h4><p>Download building permits from your target county. Filter for: ROOF, REROOF, SOLAR PV, PHOTOVOLTAIC. Finaled permits only. Check permit descriptions for roof material type.</p><ul><li>Export: Permit Type, Issue Date, Address, Folio/Parcel ID, Status</li><li>Most FL counties offer bulk CSV exports or online lookups</li></ul></div></div>
+    <div class="workflow-step"><div class="step-num">02</div><div class="step-content"><h4>Find Last Roof Date Per Parcel</h4><p>Group by parcel ID. Take the most recent finaled roof permit per property. No permit found? Use construction year from the county property appraiser — that's your original roof age.</p></div></div>
+    <div class="workflow-step"><div class="step-num">03</div><div class="step-content"><h4>Cross-Reference Solar Permits</h4><p>Flag parcels where solar permit date is AFTER the last roof permit date. Solar sitting on an old roof = your golden signal.</p><ul><li>Solar date &gt; Last roof date → flag as "solar on old roof"</li><li>Calculate roof age and solar age separately</li></ul></div></div>
+    <div class="workflow-step"><div class="step-num">04</div><div class="step-content"><h4>Tag Roof Type + Score Every Parcel</h4><p>Add the roof type tag from permit description or property record. Run the scoring formula. Every parcel gets a score, tier, roof type tag, and re-score date.</p><ul><li>Flat roofs 10+ yrs → note elevated urgency</li><li>Tile roofs 20+ yrs → flag underlayment warning</li></ul></div></div>
+    <div class="workflow-step"><div class="step-num">05</div><div class="step-content"><h4>Build Watchlist Queue</h4><p>6–9 year roofs go into the watchlist. Re-score every 6 months. Auto-promote at each age threshold. Solar homes escalate one full tier immediately.</p></div></div>
+    <div class="workflow-step"><div class="step-num">06</div><div class="step-content"><h4>Enrich + Outreach by Tier</h4><p>Pull owner mailing address from county property appraiser by folio. Skip-trace for phone/email. Customize pitch by roof type tag.</p><ul><li>Priority / Hot Lead → door knock within 48–72 hrs</li><li>Early Hot Lead → direct mail campaign</li><li>Watchlist → semi-annual nurture sequence</li></ul></div></div>
+  </div>
+</div>
+
+<!-- SOURCES PAGE -->
+<div class="page" id="page-sources">
+  <div class="section-title">DATA SOURCES</div>
+  <p class="section-sub">Where to find Florida permit data, owner records, and lead enrichment tools.</p>
+  <div class="sources-grid">
+    <div class="source-card"><div class="source-icon" style="background:rgba(230,57,70,0.12)">🏛️</div><h4>County Building Departments</h4><p>Primary source. FL county portals searchable by address or parcel. Permit descriptions often include roof material.</p><span class="source-tag">Free</span><span class="source-tag">Primary</span></div>
+    <div class="source-card"><div class="source-icon" style="background:rgba(76,201,240,0.12)">🗺️</div><h4>County Property Appraiser</h4><p>Owner mailing address, construction year, improvement history. Some FL counties list roof type and year in property records.</p><span class="source-tag">Free</span><span class="source-tag">Owner Data</span></div>
+    <div class="source-card"><div class="source-icon" style="background:rgba(87,204,153,0.12)">🔌</div><h4>FL Solar Permit Data</h4><p>Counties tag solar as SOLAR PV or PHOTOVOLTAIC. Cross-reference with roof permits by parcel ID to find solar-on-old-roof properties.</p><span class="source-tag">Free</span><span class="source-tag">Solar</span></div>
+    <div class="source-card"><div class="source-icon" style="background:rgba(244,162,97,0.12)">🏢</div><h4>BuildZoom / PermitData.com</h4><p>Third-party permit aggregators — pre-scraped across multiple FL counties. Often include material tags in permit descriptions.</p><span class="source-tag">Paid</span><span class="source-tag">Aggregated</span></div>
+    <div class="source-card"><div class="source-icon" style="background:rgba(76,201,240,0.12)">📊</div><h4>PropStream / DataTree</h4><p>Property data platforms with permit history, owner records, and roof type/age data. Good for bulk county list building.</p><span class="source-tag">Paid</span><span class="source-tag">Bulk Export</span></div>
+    <div class="source-card"><div class="source-icon" style="background:rgba(233,196,106,0.12)">📬</div><h4>BatchSkipTracing / REIPro</h4><p>Append phone and email to your scored parcel list. Sequence outreach campaigns by tier classification.</p><span class="source-tag">Paid</span><span class="source-tag">Outreach</span></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title" style="font-size:20px">MAJOR COUNTY PERMIT PORTALS</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px;">
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Miami-Dade</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">epermits.miamidade.gov — Searchable by address, includes solar + roof permit history</p></div>
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Broward County</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">web.broward.org/building — Permit search by address or parcel, bulk export available</p></div>
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Palm Beach County</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">discover.pbcgov.org/pzb — Online permit lookup by address</p></div>
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Orange County</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">ocfl.net/GrowthManagement — Permit search + property appraiser cross-ref</p></div>
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Hillsborough</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">hillsboroughcounty.org — Accela portal, includes finaled permit status</p></div>
+    <div class="formula-block" style="padding:16px;"><h3 style="margin-bottom:8px">Pinellas County</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">pinellascounty.org/build — Online permit lookup, searchable by address or permit number</p></div>
+  </div>
+</div>
+
+<!-- REPORT PAGE -->
+<div class="page" id="page-report">
+  <div class="section-title">PROPERTY REPORT TEMPLATE</div>
+  <p class="section-sub">Standardized CRM fields for each lead. Roof type shows as a tag — no score impact.</p>
+  <!-- PROPERTY APPRAISER SECTION -->
+  <div class="report-block" style="border:1px solid rgba(76,201,240,0.3);">
+    <h3 style="color:var(--blue)">🏛️ PROPERTY APPRAISER DATA</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Owner Name</div><div class="field-val mock">John & Jane Smith</div></div>
+      <div class="field"><div class="field-key">Owner Mailing Address</div><div class="field-val mock">123 Palmetto Ave, Clermont FL 34711</div></div>
+      <div class="field"><div class="field-key">Homestead Exempt?</div><div class="field-val" style="color:var(--green)">✅ Yes — Owner Occupied</div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Year Built</div><div class="field-val mock">2004</div></div>
+      <div class="field"><div class="field-key">Estimated Roof Age</div><div class="field-val" style="color:var(--red)">~21 years (built 2004, no reroof permit)</div></div>
+      <div class="field"><div class="field-key">Source</div><div class="field-val mock">Lake County Property Appraiser</div></div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:6px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">
+      ℹ️ Pull from: countyname.gov/propertyappraiser → search by folio/parcel ID → export owner name, mailing address, year built
+    </div>
+  </div>
+  <div class="report-block">
+    <h3>📍 PROPERTY IDENTIFICATION</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Address</div><div class="field-val mock">123 Palmetto Ave</div></div>
+      <div class="field"><div class="field-key">City / Zip</div><div class="field-val mock">Clermont, 34711</div></div>
+      <div class="field"><div class="field-key">County</div><div class="field-val mock">Lake County</div></div>
+      <div class="field"><div class="field-key">Folio / Parcel ID</div><div class="field-val mock">0000-0000-0000</div></div>
+    </div>
+  </div>
+  <div class="report-block">
+    <h3>🏠 ROOF PERMIT HISTORY</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Original Roof Date</div><div class="field-val mock">2004 (construction)</div></div>
+      <div class="field"><div class="field-key">Last Roof Permit</div><div class="field-val mock">No permit on record</div></div>
+      <div class="field"><div class="field-key">Roof Age</div><div class="field-val" style="color:var(--red)">21 years</div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Roof Type Tag</div><div class="field-val"><span class="tag red">3-Tab Asphalt</span> <span class="tag red">🔴 High Urgency</span></div></div>
+      <div class="field"><div class="field-key">FL Lifespan</div><div class="field-val mock">15–20 years</div></div>
+      <div class="field"><div class="field-key">Status</div><div class="field-val" style="color:var(--red)">⚠️ Past End of Life</div></div>
+    </div>
+  </div>
+  <div class="report-block">
+    <h3>☀️ SOLAR PERMIT HISTORY</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Solar Present</div><div class="field-val" style="color:var(--green)">✅ Yes</div></div>
+      <div class="field"><div class="field-key">Solar Permit Date</div><div class="field-val mock">March 2020</div></div>
+      <div class="field"><div class="field-key">Solar Age</div><div class="field-val mock">5 years</div></div>
+      <div class="field"><div class="field-key">Reroof After Solar?</div><div class="field-val" style="color:var(--red)">❌ No — Solar on Old Roof</div></div>
+    </div>
+  </div>
+  <div class="report-block">
+    <h3>🎯 LEAD SCORING SUMMARY</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Lead Score</div><div class="field-val" style="color:var(--red);font-size:20px">95 / 100</div></div>
+      <div class="field"><div class="field-key">Tier</div><div class="field-val" style="color:var(--red)">🔥🔥 Priority Hot Lead</div></div>
+      <div class="field"><div class="field-key">Action</div><div class="field-val" style="color:var(--red)">Contact Within 48hrs</div></div>
+      <div class="field"><div class="field-key">Re-Score Date</div><div class="field-val mock">Sept 2026</div></div>
+    </div>
+    <div class="field-row">
+      <div class="field" style="grid-column:1/-1"><div class="field-key">All Tags</div><div class="field-val">
+        <span class="tag red">20yr+ Roof</span>
+        <span class="tag red">3-Tab Asphalt</span>
+        <span class="tag red">🔴 High Urgency</span>
+        <span class="tag orange">Solar on Old Roof</span>
+        <span class="tag blue">Citizens Territory</span>
+      </div></div>
+    </div>
+  </div>
+  <div class="report-block">
+    <h3>📞 OUTREACH LOG</h3>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Method</div><div class="field-val mock">Door knock / Direct mail</div></div>
+      <div class="field"><div class="field-key">First Contact</div><div class="field-val mock">—</div></div>
+      <div class="field"><div class="field-key">Follow-Up Date</div><div class="field-val mock">—</div></div>
+      <div class="field"><div class="field-key">Status</div><div class="field-val mock">New — Not Contacted</div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><div class="field-key">Re-Score Date</div><div class="field-val mock">Sept 2026</div></div>
+      <div class="field"><div class="field-key">Assigned To</div><div class="field-val mock">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAP PAGE -->
+<div class="page" id="page-map">
+  <div class="section-title">NEIGHBORHOOD MAP</div>
+  <p class="section-sub">Color-coded lead pins by tier. Click any pin for full lead details. Solar properties show a glowing ring.</p>
+
+  <!-- MAPBOX TOKEN SETUP -->
+  <div id="map-setup" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Mapbox Token — Saved Locally to Your Browser</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <input type="password" id="mb-token-input" placeholder="Paste your Mapbox public token (pk.ey...)" style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;outline:none;" />
+      <button onclick="saveToken()" style="padding:10px 20px;background:var(--blue);color:var(--bg);border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Save & Load Map</button>
+      <button onclick="loadDemoMap()" style="padding:10px 20px;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">Load Demo Pins</button>
+    </div>
+    <div id="token-status" style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace;"></div>
+  </div>
+
+  <!-- TIER FILTER -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Filter:</span>
+    <button class="map-filter-btn on" data-tier="all" onclick="filterMap('all',this)">All Leads</button>
+    <button class="map-filter-btn" data-tier="p1" onclick="filterMap('p1',this)">🔥🔥 Priority</button>
+    <button class="map-filter-btn" data-tier="p2" onclick="filterMap('p2',this)">🔥 Hot Lead</button>
+    <button class="map-filter-btn" data-tier="p3" onclick="filterMap('p3',this)">🟠 Early Hot</button>
+    <button class="map-filter-btn" data-tier="p4" onclick="filterMap('p4',this)">🔵 Watch Priority</button>
+    <button class="map-filter-btn" data-tier="p5" onclick="filterMap('p5',this)">🔵 Watchlist</button>
+    <button class="map-filter-btn solar-filter" data-solar="true" onclick="filterSolar(this)">☀️ Solar Only</button>
+  </div>
+
+  <!-- MAP CONTAINER -->
+  <div id="mapbox-map" style="width:100%;height:520px;border-radius:14px;border:1px solid var(--border);background:var(--card2);display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;color:var(--muted);">
+      <div style="font-size:36px;margin-bottom:12px;">🗺️</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Map not loaded</div>
+      <div style="font-size:12px;">Enter your Mapbox token above or load demo pins to get started.</div>
+    </div>
+  </div>
+
+  <!-- LEAD DETAIL POPUP -->
+  <div id="lead-popup" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;" id="popup-name">—</div>
+        <div style="font-size:13px;color:var(--muted);" id="popup-addr">—</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;" id="popup-score">—</div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;" id="popup-tier">—</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;" id="popup-fields"></div>
+  </div>
+
+  <!-- LEAD COUNT -->
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;" id="map-stats"></div>
+</div>
+
+<!-- SPREADSHEET PAGE -->
+<div class="page" id="page-sheet">
+  <div class="section-title">SPREADSHEET EXPORT TEMPLATE</div>
+  <p class="section-sub">Copy this column structure into Google Sheets or Excel — one row per property. Sort and filter by score or tier to build your daily call list.</p>
+
+  <div class="formula-block" style="padding:20px;margin-bottom:20px;overflow-x:auto;">
+    <h3 style="margin-bottom:14px">COLUMN STRUCTURE</h3>
+    <table class="factor-table" style="min-width:700px;">
+      <tr>
+        <th>Column</th><th>Field Name</th><th>Source</th><th>Example</th>
+      </tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">A</td><td>Address</td><td style="color:var(--muted);font-size:11px">Permit / Appraiser</td><td style="color:var(--muted);font-size:11px">123 Palmetto Ave</td></tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">B</td><td>City / Zip</td><td style="color:var(--muted);font-size:11px">Appraiser</td><td style="color:var(--muted);font-size:11px">Clermont, 34711</td></tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">C</td><td>Folio / Parcel ID</td><td style="color:var(--muted);font-size:11px">Permit / Appraiser</td><td style="color:var(--muted);font-size:11px">12-34-567-890</td></tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">D</td><td>Owner Name</td><td style="color:var(--muted);font-size:11px">Appraiser</td><td style="color:var(--muted);font-size:11px">John & Jane Smith</td></tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">E</td><td>Owner Mailing Address</td><td style="color:var(--muted);font-size:11px">Appraiser</td><td style="color:var(--muted);font-size:11px">Same as property</td></tr>
+      <tr><td style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px">F</td><td>Year Built</td><td style="color:var(--muted);font-size:11px">Appraiser</td><td style="color:var(--muted);font-size:11px">2004</td></tr>
+      <tr><td style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px">G</td><td>Last Roof Permit Date</td><td style="color:var(--muted);font-size:11px">Building Permit</td><td style="color:var(--muted);font-size:11px">No permit on record</td></tr>
+      <tr><td style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px">H</td><td>Roof Age (Years)</td><td style="color:var(--muted);font-size:11px">Calculated</td><td style="color:var(--muted);font-size:11px">=2025-F2 or manual</td></tr>
+      <tr><td style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px">I</td><td>Roof Type</td><td style="color:var(--muted);font-size:11px">Permit / Appraiser</td><td style="color:var(--muted);font-size:11px">3-Tab Asphalt</td></tr>
+      <tr><td style="color:var(--orange);font-family:'DM Mono',monospace;font-size:11px">J</td><td>Solar Permit Date</td><td style="color:var(--muted);font-size:11px">Building Permit</td><td style="color:var(--muted);font-size:11px">Mar 2020</td></tr>
+      <tr><td style="color:var(--orange);font-family:'DM Mono',monospace;font-size:11px">K</td><td>Solar on Old Roof?</td><td style="color:var(--muted);font-size:11px">Calculated</td><td style="color:var(--muted);font-size:11px">=IF(J2>G2,"YES","NO")</td></tr>
+      <tr><td style="color:var(--green);font-family:'DM Mono',monospace;font-size:11px">L</td><td>Lead Score</td><td style="color:var(--muted);font-size:11px">Formula</td><td style="color:var(--muted);font-size:11px">95</td></tr>
+      <tr><td style="color:var(--green);font-family:'DM Mono',monospace;font-size:11px">M</td><td>Tier</td><td style="color:var(--muted);font-size:11px">Formula / Manual</td><td style="color:var(--muted);font-size:11px">Priority Hot Lead</td></tr>
+      <tr><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">N</td><td>Re-Score Date</td><td style="color:var(--muted);font-size:11px">Manual</td><td style="color:var(--muted);font-size:11px">Sept 2026</td></tr>
+      <tr><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">O</td><td>Outreach Status</td><td style="color:var(--muted);font-size:11px">Manual</td><td style="color:var(--muted);font-size:11px">Not Contacted</td></tr>
+      <tr><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">P</td><td>First Contact Date</td><td style="color:var(--muted);font-size:11px">Manual</td><td style="color:var(--muted);font-size:11px">—</td></tr>
+      <tr><td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">Q</td><td>Notes</td><td style="color:var(--muted);font-size:11px">Manual</td><td style="color:var(--muted);font-size:11px">Solar on 2004 roof, no reroof</td></tr>
+    </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+    <div class="formula-block" style="padding:18px;">
+      <h3 style="margin-bottom:12px">KEY GOOGLE SHEETS FORMULAS</h3>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:2;background:var(--bg);border-radius:7px;padding:12px;color:var(--text);">
+        <div style="color:var(--muted);font-size:10px">-- Roof age from year built:</div>
+        <div style="color:var(--orange)">=2025-F2</div>
+        <div style="color:var(--muted);font-size:10px;margin-top:6px">-- Solar on old roof flag:</div>
+        <div style="color:var(--orange)">=IF(AND(J2&lt;&gt;"",J2&gt;G2),"YES","NO")</div>
+        <div style="color:var(--muted);font-size:10px;margin-top:6px">-- Auto tier from score:</div>
+        <div style="color:var(--orange)">=IF(L2&gt;=90,"Priority",IF(L2&gt;=75,"Hot Lead",IF(L2&gt;=50,"Early Hot",IF(L2&gt;=30,"Watch Priority","Watchlist"))))</div>
+      </div>
+    </div>
+    <div class="formula-block" style="padding:18px;">
+      <h3 style="margin-bottom:12px">SORTING & FILTERING TIPS</h3>
+      <ul class="criteria-list">
+        <li>Sort by Column L (Lead Score) descending — your daily call list</li>
+        <li>Filter Column M by "Priority Hot Lead" for door-knock route</li>
+        <li>Filter Column K = "YES" to isolate all solar-on-old-roof leads</li>
+        <li>Filter Column O = "Not Contacted" to see untouched leads</li>
+        <li>Conditional format Column M by tier color for visual scan</li>
+        <li>Add a "Street" column to group for neighborhood routing</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box">
+    ℹ️ <strong>Pro tip:</strong> Add a "Street Name" column extracted from the address (just the street name, no number). Then sort by Street Name first, Score second — this automatically clusters your door-knock route by block so you're never driving back and forth across town.
+  </div>
+</div>
+
+<script>
+function showPage(id, e) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  e.target.classList.add('active');
+}
+
+let roofType = 'unk';
+let solMode = 'old';
+let flags = { notice:false, citizens:false, hvhz:false, storm:false, noroof:false };
+const flagPts = { notice:12, citizens:8, hvhz:5, storm:5, noroof:10 };
+const rtData = {
+  '3tab': { label:'3-Tab Asphalt', urgency:'🔴 High Urgency', cls:'red' },
+  'arch':  { label:'Architectural Shingle', urgency:'🟠 Moderate Urgency', cls:'orange' },
+  'flat':  { label:'Flat / Mod Bitumen', urgency:'🔴 High Urgency', cls:'red' },
+  'tile':  { label:'Tile (Concrete/Clay)', urgency:'🟡 Low Urgency (underlayment risk)', cls:'yellow' },
+  'unk':   { label:'Unknown Roof Type', urgency:'', cls:'gray' }
+};
+
+function setRT(t) {
+  roofType = t;
+  ['3tab','arch','flat','tile','unk'].forEach(k => document.getElementById('rt-'+k).classList.toggle('on', k===t));
+  calcScore();
+}
+
+function setSolar(m) {
+  solMode = m;
+  ['none','old','new','after'].forEach(k => document.getElementById('solar-'+k).classList.toggle('on', k===m));
+  calcScore();
+}
+
+function toggleFlag(f) {
+  flags[f] = !flags[f];
+  document.getElementById('flag-'+f).classList.toggle('on', flags[f]);
+  calcScore();
+}
+
+function calcScore() {
+  const age = parseInt(document.getElementById('inp-roofage').value);
+  let sol = 0;
+  if (solMode === 'old') sol = 25;
+  if (solMode === 'new') sol = 35;
+  let ft = 0;
+  Object.keys(flags).forEach(f => { if (flags[f]) ft += flagPts[f]; });
+  const score = Math.min(100, age + sol + ft);
+
+  document.getElementById('bd-roofage').textContent = age + ' pts';
+  document.getElementById('bd-solar').textContent = sol + ' pts';
+  document.getElementById('bd-flags').textContent = ft + ' pts';
+  document.getElementById('res-score').textContent = score;
+
+  const rt = rtData[roofType];
+  document.getElementById('res-rooftag').innerHTML = rt.urgency
+    ? '<span class="tag ' + rt.cls + '">' + rt.label + '</span> <span class="tag ' + rt.cls + '">' + rt.urgency + '</span>'
+    : '<span class="tag gray">' + rt.label + '</span>';
+  document.getElementById('bd-rooftype').textContent = rt.label + ' (tag only)';
+
+  let color, tier, name, action;
+  if (score >= 90) { color='#e63946'; tier='🔥🔥 PRIORITY HOT LEAD'; name='Priority Lead'; action='Contact within 48 hours. Old roof + solar — insurance non-renewal is imminent.'; }
+  else if (score >= 75) { color='#ff6b35'; tier='🔥 HOT LEAD'; name='Hot Lead'; action='Reach out this week. Roof is past the FL insurance threshold. Solar bumps this to Priority.'; }
+  else if (score >= 50) { color='#f4a261'; tier='🟠 EARLY HOT LEAD'; name='Early Hot Lead'; action='Outreach now if solar present. Begin education campaign — 1–4 years from urgent replacement.'; }
+  else if (score >= 30) { color='#7dd3fc'; tier='🔵 WATCHLIST PRIORITY'; name='Watch Priority'; action='Start warming this lead. Solar present? Move to Early Hot Lead outreach now.'; }
+  else { color='#4cc9f0'; tier='🔵 WATCHLIST'; name='Watchlist'; action='Add to database. Re-score every 6 months. Build the neighborhood picture.'; }
+
+  document.getElementById('res-label').textContent = tier;
+  document.getElementById('res-label').style.color = color;
+  document.getElementById('res-score').style.color = color;
+  document.getElementById('res-name').textContent = name;
+  document.getElementById('res-name').style.color = color;
+  document.getElementById('res-action').textContent = action;
+}
+
+function showScript(id) {
+  document.querySelectorAll('.script-block').forEach(b => b.style.display='none');
+  document.querySelectorAll('#script-selector .toggle-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('script-'+id).style.display='block';
+  document.getElementById('scr-'+id).classList.add('on');
+}
+
+// Draw sample map pins
+window.addEventListener('load', function() {
+  const container = document.getElementById('map-pins');
+  if (!container) return;
+  const pins = [
+    {x:'18%', y:'22%', color:'#e63946', glow:'#e63946', label:'95', solar:true},
+    {x:'32%', y:'18%', color:'#e63946', glow:'#e63946', label:'91', solar:true},
+    {x:'45%', y:'25%', color:'#ff6b35', glow:'#ff6b35', label:'82', solar:false},
+    {x:'60%', y:'20%', color:'#f4a261', glow:'#f4a261', label:'65', solar:true},
+    {x:'75%', y:'22%', color:'#f4a261', glow:'#f4a261', label:'58', solar:false},
+    {x:'88%', y:'18%', color:'#ff6b35', glow:'#ff6b35', label:'78', solar:false},
+    {x:'15%', y:'58%', color:'#7dd3fc', glow:'#7dd3fc', label:'42', solar:false},
+    {x:'28%', y:'62%', color:'#4cc9f0', glow:'#4cc9f0', label:'22', solar:false},
+    {x:'50%', y:'55%', color:'#e63946', glow:'#e63946', label:'94', solar:true},
+    {x:'65%', y:'60%', color:'#f4a261', glow:'#f4a261', label:'60', solar:false},
+    {x:'80%', y:'57%', color:'#7dd3fc', glow:'#7dd3fc', label:'38', solar:true},
+  ];
+  pins.forEach(p => {
+    const pin = document.createElement('div');
+    pin.style.cssText = `position:absolute;left:${p.x};top:${p.y};transform:translate(-50%,-50%);`;
+    const outer = p.solar ? `<div style="width:36px;height:36px;border-radius:50%;border:2px solid ${p.color};display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px ${p.glow}44;">` : '<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;">';
+    pin.innerHTML = `${outer}<div style="width:24px;height:24px;border-radius:50%;background:${p.color};display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:#fff;font-weight:500;box-shadow:0 0 8px ${p.glow}">${p.label}</div></div>`;
+    pin.title = `Score: ${p.label}${p.solar?' | Solar present':''}`;
+    container.appendChild(pin);
+  });
+});
+
+setSolar('old');
+calcScore();
+</script>
+
+<!-- MAPBOX -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script>
+// ── MAP STATE ──────────────────────────────────────────────
+let mbMap = null;
+let allLeads = [];
+let activeFilters = { tier:'all', solarOnly:false };
+
+const TIER_INFO = {
+  p1:{ color:'#e63946', name:'Priority Hot Lead' },
+  p2:{ color:'#ff6b35', name:'Hot Lead' },
+  p3:{ color:'#f4a261', name:'Early Hot Lead' },
+  p4:{ color:'#7dd3fc', name:'Watch Priority' },
+  p5:{ color:'#4cc9f0', name:'Watchlist' }
+};
+
+// Demo leads around Clermont FL
+const DEMO_LEADS = [
+  { name:'James Rivera',    address:'412 Magnolia Blvd, Clermont FL',  lng:-81.7729, lat:28.5494, score:97, tier:'p1', solar:true,  roofAge:'22 yrs', roofType:'3-Tab Asphalt',   phone:'(407) 555-0181' },
+  { name:'Carol & Mike Webb', address:'88 Palomino Dr, Clermont FL',   lng:-81.7652, lat:28.5521, score:94, tier:'p1', solar:true,  roofAge:'20 yrs', roofType:'Architectural',   phone:'(352) 555-0234' },
+  { name:'Sandra Flores',   address:'1204 Lake Shore Dr, Clermont FL', lng:-81.7780, lat:28.5468, score:91, tier:'p1', solar:true,  roofAge:'21 yrs', roofType:'3-Tab Asphalt',   phone:'(407) 555-0312' },
+  { name:'Tom Nguyen',      address:'350 Citrus Ave, Clermont FL',     lng:-81.7601, lat:28.5499, score:84, tier:'p2', solar:false, roofAge:'17 yrs', roofType:'Architectural',   phone:'(352) 555-0445' },
+  { name:'Patricia Owens',  address:'77 Hammock Ridge Rd, Clermont FL',lng:-81.7844, lat:28.5510, score:82, tier:'p2', solar:false, roofAge:'16 yrs', roofType:'Tile',            phone:'(407) 555-0567' },
+  { name:'Robert Kim',      address:'230 Oakwood Ct, Clermont FL',     lng:-81.7555, lat:28.5478, score:79, tier:'p2', solar:false, roofAge:'15 yrs', roofType:'3-Tab Asphalt',   phone:'(352) 555-0621' },
+  { name:'Angela Torres',   address:'519 Sunrise Blvd, Clermont FL',   lng:-81.7690, lat:28.5542, score:72, tier:'p3', solar:true,  roofAge:'13 yrs', roofType:'Architectural',   phone:'(407) 555-0734' },
+  { name:'Brian Marshall',  address:'105 Greenway Loop, Clermont FL',  lng:-81.7612, lat:28.5456, score:65, tier:'p3', solar:false, roofAge:'12 yrs', roofType:'Flat/Mod Bitumen',phone:'(352) 555-0812' },
+  { name:'Diana Chen',      address:'824 Emerald Lake Dr, Clermont FL',lng:-81.7750, lat:28.5530, score:58, tier:'p3', solar:false, roofAge:'11 yrs', roofType:'Tile',            phone:'(407) 555-0923' },
+  { name:'Kevin Brooks',    address:'417 Pineview Ct, Clermont FL',    lng:-81.7580, lat:28.5515, score:42, tier:'p4', solar:true,  roofAge:'9 yrs',  roofType:'Architectural',   phone:'(352) 555-1034' },
+  { name:'Lisa Monroe',     address:'663 Lakeview Terr, Clermont FL',  lng:-81.7820, lat:28.5488, score:38, tier:'p4', solar:false, roofAge:'8 yrs',  roofType:'3-Tab Asphalt',   phone:'(407) 555-1145' },
+  { name:'David Park',      address:'291 Sunny Slope Dr, Clermont FL', lng:-81.7635, lat:28.5465, score:24, tier:'p5', solar:false, roofAge:'7 yrs',  roofType:'Tile',            phone:'(352) 555-1256' },
+  { name:'Maria Santos',    address:'138 Osprey Ct, Clermont FL',      lng:-81.7698, lat:28.5503, score:19, tier:'p5', solar:false, roofAge:'6 yrs',  roofType:'Architectural',   phone:'(407) 555-1367' },
+];
+
+// ── TOKEN ─────────────────────────────────────────────────
+function saveToken() {
+  const token = document.getElementById('mb-token-input').value.trim();
+  if (!token.startsWith('pk.')) { document.getElementById('token-status').textContent = '✗ Token must start with pk. — check your Mapbox account.'; return; }
+  localStorage.setItem('mb_token', token);
+  document.getElementById('token-status').textContent = '✓ Token saved. Loading map...';
+  initMap(token, DEMO_LEADS);
+}
+
+function loadDemoMap() {
+  const saved = localStorage.getItem('mb_token');
+  if (saved) { initMap(saved, DEMO_LEADS); return; }
+  document.getElementById('token-status').textContent = '⚠ Enter your Mapbox token first to load the real map, or the demo will load without a token on file.';
+  // Load without token shows prompt
+  initMapNoToken();
+}
+
+function initMapNoToken() {
+  document.getElementById('mapbox-map').innerHTML = '';
+  renderDemoFallback(DEMO_LEADS);
+}
+
+// ── INIT MAPBOX ───────────────────────────────────────────
+function initMap(token, leads) {
+  if (!window.mapboxgl) { setTimeout(() => initMap(token, leads), 500); return; }
+  mapboxgl.accessToken = token;
+  document.getElementById('mapbox-map').innerHTML = '';
+  document.getElementById('mapbox-map').style.background = '';
+
+  try {
+    mbMap = new mapboxgl.Map({
+      container: 'mapbox-map',
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: [-81.7729, 28.5494],
+      zoom: 13
+    });
+
+    mbMap.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    mbMap.on('load', () => {
+      allLeads = leads;
+      addPins(leads);
+      renderStats(leads);
+    });
+  } catch(e) {
+    document.getElementById('token-status').textContent = '✗ Map error: ' + e.message;
+    renderDemoFallback(leads);
+  }
+}
+
+// ── ADD PINS ──────────────────────────────────────────────
+function addPins(leads) {
+  if (!mbMap) return;
+  // Remove existing markers
+  document.querySelectorAll('.ri-marker').forEach(m => m.remove());
+
+  leads.forEach(lead => {
+    if (!lead.lng || !lead.lat) return;
+    const ti = TIER_INFO[lead.tier];
+
+    // Build custom marker element
+    const el = document.createElement('div');
+    el.className = 'ri-marker';
+    el.style.cssText = 'cursor:pointer;position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;';
+
+    // Solar ring
+    const ring = lead.solar
+      ? `<div style="position:absolute;inset:0;border-radius:50%;border:2.5px solid ${ti.color};box-shadow:0 0 10px ${ti.color}88;animation:pulse 2s infinite;"></div>`
+      : '';
+
+    el.innerHTML = `
+      ${ring}
+      <div style="width:26px;height:26px;border-radius:50%;background:${ti.color};display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;font-weight:700;color:#fff;box-shadow:0 2px 8px ${ti.color}88;">${lead.score}</div>
+    `;
+
+    el.addEventListener('click', () => showPopup(lead));
+
+    new mapboxgl.Marker({ element:el, anchor:'center' })
+      .setLngLat([lead.lng, lead.lat])
+      .addTo(mbMap);
+  });
+}
+
+// ── POPUP ─────────────────────────────────────────────────
+function showPopup(lead) {
+  const ti = TIER_INFO[lead.tier];
+  document.getElementById('popup-name').textContent = lead.name;
+  document.getElementById('popup-name').style.color = ti.color;
+  document.getElementById('popup-addr').textContent = lead.address;
+  document.getElementById('popup-score').textContent = lead.score;
+  document.getElementById('popup-score').style.color = ti.color;
+  document.getElementById('popup-tier').textContent = ti.name;
+  document.getElementById('popup-tier').style.color = ti.color;
+
+  document.getElementById('popup-fields').innerHTML = [
+    { k:'Phone', v:lead.phone || '—' },
+    { k:'Roof Age', v:lead.roofAge || '—' },
+    { k:'Roof Type', v:lead.roofType || '—' },
+    { k:'Solar', v:lead.solar ? '☀️ Yes — Solar Present' : 'No Solar' },
+  ].map(f => `
+    <div class="popup-field">
+      <div class="popup-field-key">${f.k}</div>
+      <div class="popup-field-val">${f.v}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('lead-popup').style.display = 'block';
+  document.getElementById('lead-popup').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ── FILTERS ───────────────────────────────────────────────
+function filterMap(tier, btn) {
+  activeFilters.tier = tier;
+  document.querySelectorAll('.map-filter-btn:not(.solar-filter)').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  applyFilters();
+}
+
+function filterSolar(btn) {
+  activeFilters.solarOnly = !activeFilters.solarOnly;
+  btn.classList.toggle('on', activeFilters.solarOnly);
+  applyFilters();
+}
+
+function applyFilters() {
+  let filtered = allLeads;
+  if (activeFilters.tier !== 'all') filtered = filtered.filter(l => l.tier === activeFilters.tier);
+  if (activeFilters.solarOnly) filtered = filtered.filter(l => l.solar);
+  if (mbMap) addPins(filtered);
+  renderStats(filtered);
+}
+
+// ── STATS BAR ─────────────────────────────────────────────
+function renderStats(leads) {
+  const counts = {};
+  leads.forEach(l => { counts[l.tier] = (counts[l.tier]||0) + 1; });
+  document.getElementById('map-stats').innerHTML = Object.entries(TIER_INFO).map(([k,v]) =>
+    counts[k] ? `<div class="map-stat"><div class="map-stat-dot" style="background:${v.color}"></div><span style="color:${v.color};font-weight:600">${counts[k]}</span>&nbsp;<span style="color:var(--muted)">${v.name}</span></div>` : ''
+  ).join('') + `<div class="map-stat"><span style="color:var(--green);font-weight:600">${leads.length}</span>&nbsp;<span style="color:var(--muted)">Total</span></div>`;
+}
+
+// ── DEMO FALLBACK (no token) ───────────────────────────────
+function renderDemoFallback(leads) {
+  const box = document.getElementById('mapbox-map');
+  box.style.flexDirection = 'column';
+  box.style.gap = '8px';
+  box.style.padding = '20px';
+  box.style.overflowY = 'auto';
+  box.style.justifyContent = 'flex-start';
+  box.innerHTML = `<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted);margin-bottom:8px;text-align:left">Demo leads — add your Mapbox token above for the real map</div>` +
+    leads.sort((a,b)=>b.score-a.score).map(l => {
+      const ti = TIER_INFO[l.tier];
+      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border-radius:10px;border:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:50%;background:${ti.color};display:flex;align-items:center;justify-content:center;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;${l.solar?'box-shadow:0 0 10px '+ti.color+'88;':''}">${l.score}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600">${l.name}</div>
+          <div style="font-size:11px;color:var(--muted)">${l.address}</div>
+        </div>
+        <div style="font-size:11px;font-family:\'DM Mono\',monospace;color:${ti.color}">${ti.name}${l.solar?' ☀️':''}</div>
+      </div>`;
+    }).join('');
+  allLeads = leads;
+  renderStats(leads);
+}
+
+// ── AUTO-LOAD SAVED TOKEN ──────────────────────────────────
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('mb_token');
+  if (saved) {
+    document.getElementById('mb-token-input').value = saved;
+    document.getElementById('token-status').textContent = '✓ Token loaded from browser storage.';
+  }
+});
+</script>
+<style>
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.6;transform:scale(1.15);}
+}
+</style>
+</body>
+</html>
