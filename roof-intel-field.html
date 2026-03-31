@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roof Intel">
+<meta name="theme-color" content="#0d0f14">
+<title>Roof Intel Field Tool</title>
+<style>
+:root {
+  --bg: #0d0f14;
+  --card: #1a1e28;
+  --card2: #222736;
+  --border: #2e3447;
+  --red: #e63946;
+  --deepred: #ff6b35;
+  --orange: #f4a261;
+  --yellow: #e9c46a;
+  --blue: #4cc9f0;
+  --blue2: #7dd3fc;
+  --green: #57cc99;
+  --text: #e8eaf0;
+  --muted: #7b8299;
+  --safe: 44px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+body {
+  font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TOP BAR */
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-top: max(14px, env(safe-area-inset-top));
+}
+.topbar-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.topbar-title span { color: var(--red); }
+.topbar-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.score-bubble {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 2px solid var(--red);
+  transition: all 0.3s;
+}
+.score-bubble .snum { font-size: 22px; font-weight: 700; color: var(--red); line-height: 1; transition: color 0.3s; }
+.score-bubble .slbl { font-size: 8px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* BOTTOM NAV */
+.bottomnav {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-shrink: 0;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+.bnav-btn {
+  flex: 1;
+  padding: 12px 8px 10px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  cursor: pointer;
+  border: none; background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  transition: color 0.2s;
+}
+.bnav-btn.on { color: var(--blue); }
+.bnav-icon { font-size: 22px; }
+
+/* SCROLL AREA */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+}
+
+/* SECTIONS */
+.section { display: none; }
+.section.on { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+/* BIG BUTTONS */
+.bigbtn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.bigbtn {
+  padding: 16px 10px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--card2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+  -webkit-appearance: none;
+}
+.bigbtn .bico { font-size: 26px; }
+.bigbtn.on { color: var(--text); }
+.bigbtn.r.on { background: rgba(230,57,70,0.2); border-color: var(--red); }
+.bigbtn.o.on { background: rgba(255,107,53,0.2); border-color: var(--deepred); }
+.bigbtn.a.on { background: rgba(244,162,97,0.2); border-color: var(--orange); }
+.bigbtn.b2.on { background: rgba(125,211,252,0.2); border-color: var(--blue2); }
+.bigbtn.b.on { background: rgba(76,201,240,0.15); border-color: var(--blue); }
+.bigbtn.sol.on { background: rgba(87,204,153,0.15); border-color: var(--green); }
+.bigbtn.sol-off.on { background: rgba(123,130,153,0.15); border-color: var(--muted); }
+
+/* SELECT */
+.sel {
+  width: 100%;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 15px;
+  padding: 13px 14px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+/* RESULT CARD */
+.result-card {
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+  transition: background 0.3s, border-color 0.3s;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+}
+.result-tier { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; transition: color 0.3s; }
+.result-score { font-size: 80px; font-weight: 800; line-height: 1; margin-bottom: 4px; transition: color 0.3s; }
+.result-name { font-size: 22px; font-weight: 700; margin-bottom: 10px; transition: color 0.3s; }
+.result-action { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* FLAG CHIPS */
+.chip-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip {
+  padding: 9px 14px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.chip.on { background: rgba(76,201,240,0.15); border-color: var(--blue); color: var(--blue); }
+
+/* SCORE BREAKDOWN */
+.breakdown { background: var(--card2); border-radius: 12px; padding: 12px 14px; }
+.brow { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.brow:last-child { border-bottom: none; }
+.brow .bk { color: var(--muted); }
+.brow .bv { font-weight: 600; }
+
+/* SCRIPT SECTION */
+.tier-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 22px;
+  font-size: 13px; font-weight: 600;
+  margin: 4px; cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--card2); color: var(--muted);
+  transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.tier-pill.on { color: var(--text); }
+.tier-pill.r.on { background: rgba(230,57,70,0.2); border-color: var(--red); color: var(--red); }
+.tier-pill.dr.on { background: rgba(255,107,53,0.2); border-color: var(--deepred); color: var(--deepred); }
+.tier-pill.o.on { background: rgba(244,162,97,0.2); border-color: var(--orange); color: var(--orange); }
+.tier-pill.b.on { background: rgba(76,201,240,0.15); border-color: var(--blue); color: var(--blue); }
+.tier-pill.y.on { background: rgba(233,196,106,0.15); border-color: var(--yellow); color: var(--yellow); }
+
+.script-card { display: none; }
+.script-card.on { display: block; }
+
+.bullet-list { list-style: none; margin-bottom: 16px; }
+.bullet-list li {
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 10px;
+  color: var(--text);
+}
+.bullet-list li:last-child { border-bottom: none; }
+.bullet-list li::before { content: '→'; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+
+.script-toggle {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  -webkit-appearance: none;
+}
+
+.full-script {
+  display: none;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+.full-script.on { display: block; }
+.script-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 14px 0 6px;
+  font-weight: 600;
+}
+.script-line { margin-bottom: 12px; }
+
+/* ADDRESS TAB */
+.addr-input {
+  width: 100%;
+  background: var(--card2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 16px;
+  outline: none;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+}
+.addr-input:focus { border-color: var(--blue); }
+.addr-input::placeholder { color: var(--muted); }
+
+.save-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  background: var(--red);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 14px;
+  -webkit-appearance: none;
+}
+.save-btn.blue { background: var(--blue); color: var(--bg); }
+
+.lead-item {
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.lead-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.lead-info { flex: 1; }
+.lead-addr { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.lead-meta { font-size: 12px; color: var(--muted); }
+.lead-score { font-size: 22px; font-weight: 800; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- NAV BAR -->
+<div style="background:#13161e;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px;">
+  <a href="index.html" style="color:var(--muted);text-decoration:none;">← Home</a>
+  <span style="color:var(--border)">|</span>
+  <a href="roof-intel.html" style="color:var(--muted);text-decoration:none;">Dashboard</a>
+  <span style="color:var(--border)">|</span>
+  <a href="roof-intel-intake.html" style="color:var(--muted);text-decoration:none;">Intake</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">ROOF <span>INTEL</span></div>
+    <div class="topbar-sub">Field Tool — Works Offline</div>
+  </div>
+  <div class="score-bubble" id="top-bubble">
+    <div class="snum" id="top-score">—</div>
+    <div class="slbl">Score</div>
+  </div>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll-area">
+
+  <!-- CALCULATOR SECTION -->
+  <div class="section on" id="sec-calc">
+
+    <div class="card">
+      <div class="card-title">Roof Age</div>
+      <div class="bigbtn-grid">
+        <button class="bigbtn r" id="age-20" onclick="setAge('20')"><div class="bico">🔥🔥</div>20+ Years</button>
+        <button class="bigbtn o" id="age-15" onclick="setAge('15')"><div class="bico">🔥</div>15–19 Years</button>
+        <button class="bigbtn a" id="age-10" onclick="setAge('10')"><div class="bico">🟠</div>10–14 Years</button>
+        <button class="bigbtn b2" id="age-8" onclick="setAge('8')"><div class="bico">🔵</div>8–9 Years</button>
+        <button class="bigbtn b" id="age-6" onclick="setAge('6')"><div class="bico">🔵</div>6–7 Years</button>
+        <button class="bigbtn" id="age-0" onclick="setAge('0')"><div class="bico">✅</div>Under 6 Yrs</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Solar Status</div>
+      <div class="bigbtn-grid">
+        <button class="bigbtn sol on" id="sol-yes" onclick="setSol('yes')"><div class="bico">☀️</div>Solar — No New Roof</button>
+        <button class="bigbtn sol" id="sol-new" onclick="setSol('new')"><div class="bico">🌞</div>Solar — Last 2 Yrs</button>
+        <button class="bigbtn sol-off" id="sol-no" onclick="setSol('no')"><div class="bico">❌</div>No Solar</button>
+        <button class="bigbtn sol-off" id="sol-after" onclick="setSol('after')"><div class="bico">🔄</div>Reroof After Solar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Roof Type (Tag Only)</div>
+      <select class="sel" id="roof-type" onchange="updateRoofTag()">
+        <option value="unk">Unknown</option>
+        <option value="3tab">3-Tab Asphalt 🔴 High Urgency</option>
+        <option value="arch">Architectural Shingle 🟠 Moderate</option>
+        <option value="flat">Flat / Modified Bitumen 🔴 High Urgency</option>
+        <option value="tile">Tile (Concrete/Clay) 🟡 Low / Underlayment Risk</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Risk Flags</div>
+      <div class="chip-grid">
+        <button class="chip" id="f-notice" onclick="toggleChip('notice')">Insurance Notice</button>
+        <button class="chip" id="f-citizens" onclick="toggleChip('citizens')">Citizens Territory</button>
+        <button class="chip" id="f-hvhz" onclick="toggleChip('hvhz')">High Wind Zone</button>
+        <button class="chip" id="f-storm" onclick="toggleChip('storm')">Storm Damage Nearby</button>
+        <button class="chip" id="f-noroof" onclick="toggleChip('noroof')">No Permit 10+ Yrs</button>
+      </div>
+    </div>
+
+    <div class="result-card" id="result-card">
+      <div class="result-tier" id="r-tier">SELECT ROOF AGE ABOVE</div>
+      <div class="result-score" id="r-score">—</div>
+      <div class="result-name" id="r-name">Tap a roof age to score</div>
+      <div class="result-action" id="r-action">Enter the property details above to get an instant lead score and tier classification.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Score Breakdown</div>
+      <div class="breakdown">
+        <div class="brow"><span class="bk">Roof Age</span><span class="bv" id="bd-age">— pts</span></div>
+        <div class="brow"><span class="bk">Solar Bonus</span><span class="bv" id="bd-sol">— pts</span></div>
+        <div class="brow"><span class="bk">Risk Flags</span><span class="bv" id="bd-flags">0 pts</span></div>
+        <div class="brow"><span class="bk">Roof Type</span><span class="bv" id="bd-rt" style="color:var(--muted);font-size:12px">Tag only</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LEADS SECTION -->
+  <div class="section" id="sec-leads">
+
+    <div class="card">
+      <div class="card-title">Save Current Lead</div>
+      <input type="text" class="addr-input" id="lead-addr" placeholder="Street address..." />
+      <input type="text" class="addr-input" id="lead-owner" placeholder="Owner name (optional)" />
+      <input type="text" class="addr-input" id="lead-notes" placeholder="Notes..." />
+      <button class="save-btn" onclick="saveLead()">Save Lead</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Saved Leads (<span id="lead-count">0</span>)</div>
+      <div id="lead-list"><div class="empty-state"><div class="empty-icon">📋</div>No leads saved yet.<br>Score a property and save it here.</div></div>
+    </div>
+
+    <button class="save-btn blue" onclick="exportLeads()">Export All Leads as Text</button>
+
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <button class="bnav-btn on" id="nav-calc" onclick="showSection('calc')">
+    <div class="bnav-icon">🧮</div>Calculator
+  </button>
+
+  <button class="bnav-btn" id="nav-leads" onclick="showSection('leads')">
+    <div class="bnav-icon">📍</div>Saved Leads
+  </button>
+</div>
+
+<script>
+// STATE
+let ageVal = null;
+let solVal = null;
+let flags = { notice:false, citizens:false, hvhz:false, storm:false, noroof:false };
+const flagPts = { notice:12, citizens:8, hvhz:5, storm:5, noroof:10 };
+let leads = JSON.parse(localStorage.getItem('roofLeads') || '[]');
+
+const agePts = { '20':40, '15':32, '10':22, '8':14, '6':8, '0':0 };
+const ageIds = ['20','15','10','8','6','0'];
+const ageColors = { '20':'r','15':'o','10':'a','8':'b2','6':'b','0':'' };
+const solIds = ['yes','new','no','after'];
+
+// SECTION NAV
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  document.getElementById('nav-'+id).classList.add('on');
+}
+
+// AGE
+function setAge(v) {
+  ageVal = v;
+  ageIds.forEach(a => {
+    const btn = document.getElementById('age-'+a);
+    btn.classList.remove('on','r','o','a','b2','b');
+    if (ageColors[a]) btn.classList.add(ageColors[a]);
+  });
+  const btn = document.getElementById('age-'+v);
+  btn.classList.add('on');
+  calc();
+}
+
+// SOLAR
+function setSol(v) {
+  solVal = v;
+  solIds.forEach(s => document.getElementById('sol-'+s).classList.remove('on'));
+  document.getElementById('sol-'+v).classList.add('on');
+  calc();
+}
+
+// FLAGS
+function toggleChip(f) {
+  flags[f] = !flags[f];
+  document.getElementById('f-'+f).classList.toggle('on', flags[f]);
+  calc();
+}
+
+// ROOF TAG
+function updateRoofTag() {
+  const v = document.getElementById('roof-type').value;
+  const labels = {
+    'unk':'Unknown roof type',
+    '3tab':'3-Tab Asphalt — High Urgency',
+    'arch':'Architectural Shingle — Moderate',
+    'flat':'Flat / Mod Bitumen — High Urgency',
+    'tile':'Tile — Low urgency (check underlayment)'
+  };
+  document.getElementById('bd-rt').textContent = labels[v];
+}
+
+// CALC
+function calc() {
+  if (!ageVal) return;
+  const age = agePts[ageVal] || 0;
+  let sol = 0;
+  if (solVal === 'yes') sol = 25;
+  if (solVal === 'new') sol = 35;
+  let ft = 0;
+  Object.keys(flags).forEach(f => { if(flags[f]) ft += flagPts[f]; });
+  const score = Math.min(100, age + sol + ft);
+
+  document.getElementById('bd-age').textContent = age + ' pts';
+  document.getElementById('bd-sol').textContent = sol + ' pts';
+  document.getElementById('bd-flags').textContent = ft + ' pts';
+  document.getElementById('r-score').textContent = score;
+  document.getElementById('top-score').textContent = score;
+
+  let color, tier, name, action;
+  if (score >= 90)      { color=var_red;   tier='🔥🔥 PRIORITY HOT LEAD'; name='Priority Lead';   action='Contact within 48 hours. Old roof + solar — insurance non-renewal is imminent.'; }
+  else if (score >= 75) { color='#ff6b35'; tier='🔥 HOT LEAD';            name='Hot Lead';         action='Reach out this week. Past FL insurance threshold.'; }
+  else if (score >= 50) { color='#f4a261'; tier='🟠 EARLY HOT LEAD';      name='Early Hot Lead';   action='Outreach now if solar. Education campaign — approaching the window.'; }
+  else if (score >= 30) { color='#7dd3fc'; tier='🔵 WATCHLIST PRIORITY';  name='Watch Priority';   action='Start warming. Solar present? Move to Early Hot Lead now.'; }
+  else                  { color='#4cc9f0'; tier='🔵 WATCHLIST';           name='Watchlist';         action='Add to database. Re-score every 6 months.'; }
+
+  const rc = document.getElementById('result-card');
+  document.getElementById('r-tier').textContent = tier;
+  document.getElementById('r-tier').style.color = color;
+  document.getElementById('r-score').style.color = color;
+  document.getElementById('r-name').textContent = name;
+  document.getElementById('r-name').style.color = color;
+  document.getElementById('r-action').textContent = action;
+  document.getElementById('top-score').style.color = color;
+  document.getElementById('top-bubble').style.borderColor = color;
+}
+
+const var_red = '#e63946';
+
+// FIX the calc bug
+function calc() {
+  if (!ageVal) return;
+  const age = agePts[ageVal] || 0;
+  let sol = 0;
+  if (solVal === 'yes') sol = 25;
+  if (solVal === 'new') sol = 35;
+  let ft = 0;
+  Object.keys(flags).forEach(f => { if(flags[f]) ft += flagPts[f]; });
+  const score = Math.min(100, age + sol + ft);
+
+  document.getElementById('bd-age').textContent = age + ' pts';
+  document.getElementById('bd-sol').textContent = sol + ' pts';
+  document.getElementById('bd-flags').textContent = ft + ' pts';
+  document.getElementById('r-score').textContent = score;
+  document.getElementById('top-score').textContent = score;
+
+  let color, tier, name, action;
+  if (score >= 90)      { color='#e63946'; tier='🔥🔥 PRIORITY HOT LEAD'; name='Priority Lead';   action='Contact within 48 hours. Old roof + solar — insurance non-renewal is imminent.'; }
+  else if (score >= 75) { color='#ff6b35'; tier='🔥 HOT LEAD';            name='Hot Lead';         action='Reach out this week. Past FL insurance threshold.'; }
+  else if (score >= 50) { color='#f4a261'; tier='🟠 EARLY HOT LEAD';      name='Early Hot Lead';   action='Outreach now if solar. Education campaign — approaching the window.'; }
+  else if (score >= 30) { color='#7dd3fc'; tier='🔵 WATCHLIST PRIORITY';  name='Watch Priority';   action='Start warming. Solar present? Move to Early Hot Lead now.'; }
+  else                  { color='#4cc9f0'; tier='🔵 WATCHLIST';           name='Watchlist';         action='Add to database. Re-score every 6 months.'; }
+
+  document.getElementById('r-tier').textContent = tier;
+  document.getElementById('r-tier').style.color = color;
+  document.getElementById('r-score').style.color = color;
+  document.getElementById('r-name').textContent = name;
+  document.getElementById('r-name').style.color = color;
+  document.getElementById('r-action').textContent = action;
+  document.getElementById('top-score').style.color = color;
+  document.getElementById('top-bubble').style.borderColor = color;
+}
+
+// LEADS
+function tierColor(score) {
+  if (score >= 90) return '#e63946';
+  if (score >= 75) return '#ff6b35';
+  if (score >= 50) return '#f4a261';
+  if (score >= 30) return '#7dd3fc';
+  return '#4cc9f0';
+}
+function tierName(score) {
+  if (score >= 90) return 'Priority Hot Lead';
+  if (score >= 75) return 'Hot Lead';
+  if (score >= 50) return 'Early Hot Lead';
+  if (score >= 30) return 'Watch Priority';
+  return 'Watchlist';
+}
+
+function getCurrentScore() {
+  if (!ageVal) return null;
+  const age = agePts[ageVal] || 0;
+  let sol = 0;
+  if (solVal === 'yes') sol = 25;
+  if (solVal === 'new') sol = 35;
+  let ft = 0;
+  Object.keys(flags).forEach(f => { if(flags[f]) ft += flagPts[f]; });
+  return Math.min(100, age + sol + ft);
+}
+
+function saveLead() {
+  const addr = document.getElementById('lead-addr').value.trim();
+  if (!addr) { alert('Please enter an address'); return; }
+  const score = getCurrentScore();
+  const owner = document.getElementById('lead-owner').value.trim();
+  const notes = document.getElementById('lead-notes').value.trim();
+  const rt = document.getElementById('roof-type').value;
+  const rtLabels = {'unk':'Unknown','3tab':'3-Tab Asphalt','arch':'Architectural','flat':'Flat/Mod Bitumen','tile':'Tile'};
+
+  leads.unshift({
+    id: Date.now(),
+    addr, owner, notes,
+    score: score || 0,
+    roofType: rtLabels[rt] || 'Unknown',
+    solar: solVal,
+    date: new Date().toLocaleDateString()
+  });
+  localStorage.setItem('roofLeads', JSON.stringify(leads));
+  document.getElementById('lead-addr').value = '';
+  document.getElementById('lead-owner').value = '';
+  document.getElementById('lead-notes').value = '';
+  renderLeads();
+}
+
+function renderLeads() {
+  const list = document.getElementById('lead-list');
+  document.getElementById('lead-count').textContent = leads.length;
+  if (!leads.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No leads saved yet.<br>Score a property and save it here.</div>';
+    return;
+  }
+  list.innerHTML = leads.map((l,i) => `
+    <div class="lead-item" onclick="deleteLead(${i})">
+      <div class="lead-dot" style="background:${tierColor(l.score)}"></div>
+      <div class="lead-info">
+        <div class="lead-addr">${l.addr}</div>
+        <div class="lead-meta">${l.owner ? l.owner + ' · ' : ''}${tierName(l.score)} · ${l.roofType} · ${l.date}</div>
+        ${l.notes ? '<div class="lead-meta" style="margin-top:2px;font-style:italic">' + l.notes + '</div>' : ''}
+      </div>
+      <div class="lead-score" style="color:${tierColor(l.score)}">${l.score}</div>
+    </div>
+  `).join('');
+}
+
+function deleteLead(i) {
+  if (confirm('Remove this lead?')) {
+    leads.splice(i, 1);
+    localStorage.setItem('roofLeads', JSON.stringify(leads));
+    renderLeads();
+  }
+}
+
+function exportLeads() {
+  if (!leads.length) { alert('No leads to export.'); return; }
+  const text = leads.map(l =>
+    `${l.addr}\n${l.owner || 'Owner unknown'}\nScore: ${l.score} — ${tierName(l.score)}\nRoof: ${l.roofType} | Solar: ${l.solar}\n${l.notes || ''}\nSaved: ${l.date}\n`
+  ).join('\n---\n\n');
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'roof-intel-leads.txt';
+  a.click();
+}
+
+// INIT
+renderLeads();
+setSol('yes');
+</script>
+</body>
+</html>
